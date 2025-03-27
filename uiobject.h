@@ -5,8 +5,8 @@
 //  Created by Erik Morris on 7/17/24.
 //
 
-#ifndef Button_h
-#define Button_h
+#ifndef uiobject_h
+#define uiobject_h
 
 #include "Texture.h"
 #include <SDL3/SDL.h>
@@ -29,6 +29,7 @@ typedef struct {
   char *text;
 } Button;
 
+
 void Button_init(Button *button, float x, float y, float w, float h);
 void Button_initAndLoad(Button *button, SDL_Renderer *renderer, float x,
                         float y, float w, float h, const char *buttonBackground,
@@ -46,4 +47,18 @@ bool Button_loadTexturesDebug(Button *button, SDL_Renderer *renderer,
 void Button_render(Button *button, SDL_Renderer *renderer);
 void Button_handleEvent(Button *button, SDL_Event *e);
 
+typedef struct {
+  SDL_FRect sliderLever;
+  SDL_FRect sliderBar;
+  SDL_Color leverColor, barColor;
+  int value, min, max, stepLength;
+  SDL_FPoint whenHeldMousePos;
+  bool isSliderBeingPressed;
+  bool isVert;
+} Slider;
+
+void Slider_init(Slider *slider, SDL_FRect* lever,  SDL_Color leverColor,SDL_FRect* bar, SDL_Color barColor, int defaultVal, int minVal, int maxVal, bool isVert);
+void Slider_free(Slider *slider);
+void Slider_render(Slider *slider, SDL_Renderer *renderer);
+void Slider_handleEvenets(Slider *slider, SDL_Event *e);
 #endif /* Button_h */

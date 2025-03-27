@@ -5,7 +5,7 @@
 //  Created by Erik Morris on 7/17/24.
 //
 
-#include "Button.h"
+#include "uiobject.h"
 
 void Button_init(Button *button, float x, float y, float w, float h) {
   button->buttonInfo.x = x;
@@ -145,3 +145,117 @@ void Button_handleEvent(Button *button, SDL_Event *e) {
     }
   }
 }
+
+
+// SLIDER DEFINITIONS
+void Slider_init(Slider *slider, SDL_FRect *lever,  SDL_Color leverColor,SDL_FRect* bar, SDL_Color barColor, int defaultVal, int minVal, int maxVal, bool isVert){
+  slider->sliderLever = *lever;
+  slider->leverColor = leverColor;
+  slider->sliderBar = *bar;
+  slider->barColor = barColor;
+  slider->value = defaultVal;
+  slider->min = minVal;
+  slider->max = maxVal;
+  slider->isVert = isVert;
+  slider->stepLength =  (isVert) ?(slider->max-slider->min)/(slider->sliderBar.h-slider->sliderLever.h): (slider->max-slider->min)/(slider->sliderBar.w-slider->sliderLever.w);
+  if (slider->value<minVal)
+    slider->value = minVal;
+  if (isVert)
+  slider->sliderLever.y = (slider->sliderBar.y)+((slider->sliderBar.h-slider->sliderLever.h)/((float)(slider->max)/(slider->value)));
+  else
+  slider->sliderLever.x = slider->sliderBar.x+((slider->sliderBar.w-slider->sliderLever.w)/((float)(slider->max)/(slider->value)));
+}
+void Slider_free(Slider *slider){
+//essentially an obsolete function at the moment
+  slider->value = 0;
+  slider->min = 0;
+  slider->max = 0;
+}
+void Slider_render(Slider *slider, SDL_Renderer *renderer){
+SDL_SetRenderDrawColor(renderer, slider->barColor.r, slider->barColor.g,slider->barColor.b,slider->barColor.a);
+SDL_RenderFillRect(renderer, &slider->sliderBar);
+SDL_SetRenderDrawColor(renderer, slider->leverColor.r, slider->leverColor.g,slider->leverColor.b,slider->leverColor.a);
+SDL_RenderFillRect(renderer, &slider->sliderLever);
+}
+void Slider_handleEvenets(Slider *slider, SDL_Event *e){
+if (e->type == SDL_EVENT_MOUSE_MOTION ||
+      e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
+      e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
+    // Get mouse position
+    float x, y;
+    SDL_GetMouseState(&x, &y);
+    // Check if mouse is in button
+    bool inside = true;
+
+    if (e->type==SDL_EVENT_MOUSE_MOTION){
+      if (slider->isSliderBeingPressed){
+          //move pos
+         if (slider->isVert){
+           slider->sliderLever.y=y-slider->whenHeldMousePos.y;
+           if (slider->sliderLever.y<slider->sliderBar.y){
+             slider->sliderLever.y=slider->sliderBar.y;
+          } else if (slider->sliderLever.y+slider->sliderLever.h>slider->sliderBar.y+slider->sliderBar.h){
+           slider->sliderLever.y = slider->sliderBar.y+slider->sliderBar.h-slider->sliderLever.h;
+          }
+        slider->value = slider->min + ((slider->sliderLever.y-slider->sliderBar.y)*slider->stepLength);
+        } else{
+           slider->sliderLever.x=x-slider->whenHeldMousePos.x;
+           if (slider->sliderLever.x<slider->sliderBar.x){
+             slider->sliderLever.x=slider->sliderBar.x;
+          } else if (slider->sliderLever.x+slider->sliderLever.w>slider->sliderBar.x+slider->sliderBar.w){
+           slider->sliderLever.x = slider->sliderBar.x+slider->sliderBar.w-slider->sliderLever.w;
+          }
+        slider->value = slider->min + ((slider->sliderLever.x-slider->sliderBar.x)*slider->stepLength);
+        }
+        }
+    }
+    if (e->type==SDL_EVENT_MOUSE_BUTTON_UP){
+       if (slider->isSliderBeingPressed){
+          slider->isSliderBeingPressed=false;
+        }
+    }
+
+    // Mouse is left of the button
+    if (x < slider->sliderLever.x) {
+      inside = false;
+    }
+    // Mouse is right of the button
+    else if (x > slider->sliderLever.x + slider->sliderLever.w) {
+      inside = false;
+    }
+    // Mouse above the button
+    else if (y < slider->sliderLever.y) {
+      inside = false;
+    }
+    // Mouse below the button
+    else if (y > slider->sliderLever.y + slider->sliderLever.h) {
+      inside = false;
+    }
+    // Mouse is outside button
+    if (!inside) {
+      // Texture_setColor(&button->buttonTexture, 255, 255, 255);
+      if (slider->isSliderBeingPressed){
+
+      }
+    }
+    // Mouse is inside button
+    else {
+      // Set mouse over sprite
+      switch (e->type) {
+      case SDL_EVENT_MOUSE_MOTION:
+        break;
+
+      case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        // Texture_setColor(&button->buttonTexture, 130, 130, 130);
+        slider->isSliderBeingPressed = true;
+        slider->whenHeldMousePos = (SDL_FPoint){x-slider->sliderLever.x,y-slider->sliderLever.y};
+        break;
+
+      case SDL_EVENT_MOUSE_BUTTON_UP:
+
+        break;
+      }
+    }
+  }
+}
+
