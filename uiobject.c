@@ -161,9 +161,9 @@ void Slider_init(Slider *slider, SDL_FRect *lever,  SDL_Color leverColor,SDL_FRe
   if (slider->value<minVal)
     slider->value = minVal;
   if (isVert)
-  slider->sliderLever.y = (slider->sliderBar.y)+((slider->sliderBar.h-slider->sliderLever.h)/((float)(slider->max)/(slider->value)));
+  slider->sliderLever.y = (slider->sliderBar.y)+(float)(((slider->max-slider->min)-(slider->value))/slider->stepLength);
   else
-  slider->sliderLever.x = slider->sliderBar.x+((slider->sliderBar.w-slider->sliderLever.w)/((float)(slider->max)/(slider->value)));
+  slider->sliderLever.x = slider->sliderBar.x+(float)(((slider->max-slider->min)-(slider->value))/slider->stepLength);
 }
 void Slider_free(Slider *slider){
 //essentially an obsolete function at the moment

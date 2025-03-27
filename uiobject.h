@@ -51,7 +51,8 @@ typedef struct {
   SDL_FRect sliderLever;
   SDL_FRect sliderBar;
   SDL_Color leverColor, barColor;
-  int value, min, max, stepLength;
+  int value, min, max;
+  float stepLength;
   SDL_FPoint whenHeldMousePos;
   bool isSliderBeingPressed;
   bool isVert;
