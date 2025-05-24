@@ -1,6 +1,6 @@
 // #include "Button.h"
-// #include "Texture.h"
-// #include "Timer.h"
+#include "Texture.h"
+#include "Timer.h"
 #include "scenemanager.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -30,15 +30,15 @@ typedef struct context {
   /* Textures/Fonts */
   TTF_Font *gFont;     // freed
   // Texture fontTexture; // freed
-  // Texture fpsTexture;  // freed
+  Texture fpsTexture;  // freed
 
   /* Entities */
 
   /* Other */
   // Button butt;           // freed
   // SDL_Joystick *gamePad; // freed
-  // Timer fps;             // no need to free
-  // Timer capTimer;
+  Timer fps;             // no need to free
+  Timer capTimer;
   int frameCount;
 
   /* Music/Sounds */
