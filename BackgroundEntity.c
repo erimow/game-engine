@@ -43,11 +43,16 @@ void BackgroundEntity_init(BackgroundEntity *bge, Entity *entity, int amount) {
         entity->spriteRenderRect.w / (bge->entity[i].depth / 3);
     bge->entity[i].spriteRenderRect.h =
         entity->spriteRenderRect.h / (bge->entity[i].depth / 3);
+    #ifdef TARGET_FPS
     bge->entity[i].up =
         ((rand() %
           (TARGET_FPS))); // USING UP FOR ANIMATION OFFSET // CHANGE THIS, AND
                           // ADJUST BASED ON MOVE SPEED // ACTUALLY MAKE AN
                           // ANIMATION SPEED VARIABLE ON TOP OF OFFSET
+       #else 
+    bge->entity[i].up = ((rand() %
+          (60)));
+       #endif
     // bge->entity[i].animationSpeed = bge->entity[i].xVel
     // bge->entity[i].currentAnimationFrame = 0;
   }
