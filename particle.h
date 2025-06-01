@@ -1,18 +1,47 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_stdinc.h>
 #include <stdio.h>
-typedef enum PARTICLE_TYPE { RECTANCLE, CIRCLE } PARTICLE_TYPE;
-typedef struct particle {
-  PARTICLE_TYPE particle_type;
+#include <stdlib.h>
+typedef enum PARTICLE_TYPE { EXPLOSION, DIRECTIONAL } PARTICLE_TYPE;
+typedef struct ParticleTemplate {
   Uint16 particleAmount;
-  Uint16 particleDuration;
-  bool hadGravity;
+  float particleDuration;
+  float fadeDuration;
+  float spawnRadius;
+  float directionalSpread;
+  float baseVelocity;
+  float velocityVariance;
+  float gravity;
+  float durationalScale;
   bool hasCollision;
+  SDL_Color particleColor;
+} ParticleTemplate;
+
+typedef struct particle {
+  SDL_FRect p;
+  SDL_FPoint moveDir;
+  SDL_FPoint moveVelocity;
 } particle;
 
-void Particle_init(particle *p, Uint16 particleAmount, Uint16 particleDuration,
-                   bool hasGravity, bool hasCollision);
-void Particle_deinit(particle *p);
+typedef struct particleInstance {
+  ParticleTemplate *particleTemplate;
+  particle *particles; // array of particles
+  SDL_FPoint pos;      // epicentre or beginning of the effect
+} particleInstance;
+
+void Particle_init(ParticleTemplate *p, Uint16 particleAmount,
+                   float particleDuration, float fadeDuration,
+                   float spawnRadius, float directionalSpread,
+                   float baseVelocity, float velocityVariance, float gravity,
+                   float durationalScale, bool hasCollision, SDL_Color color);
+
+void Particle_deinit(ParticleTemplate *p);
+
+particleInstance Particle_spawnInstance(ParticleTemplate *p, SDL_FPoint *loc);
+void Particle_updateInstance(particleInstance *p);
+void Particle_renderInstance(particleInstance *p, SDL_Renderer *renderer);
+void Particle_destroyInstance(particleInstance *p);
 #endif
